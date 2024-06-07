@@ -7,7 +7,7 @@ from game_hand import Hand, HandValue
 class TestHands(unittest.TestCase):
     def test_straight_flush(self):
         hand = Hand()
-        hand.cards.extend([
+        hand.add_cards([
             Card(Suit.DIAMONDS, 1),
             Card(Suit.DIAMONDS, 2),
             Card(Suit.DIAMONDS, 3),
@@ -18,7 +18,7 @@ class TestHands(unittest.TestCase):
 
     def test_straight(self):
         hand = Hand()
-        hand.cards.extend([
+        hand.add_cards([
             Card(Suit.DIAMONDS, 1),
             Card(Suit.CLUBS, 2),
             Card(Suit.HEARTS, 3),
@@ -29,7 +29,7 @@ class TestHands(unittest.TestCase):
 
     def test_flush(self):
         hand = Hand()
-        hand.cards.extend([
+        hand.add_cards([
             Card(Suit.DIAMONDS, 1),
             Card(Suit.DIAMONDS, 3),
             Card(Suit.DIAMONDS, 4),
@@ -40,7 +40,7 @@ class TestHands(unittest.TestCase):
 
     def test_pair(self):
         hand = Hand()
-        hand.cards.extend([
+        hand.add_cards([
             Card(Suit.DIAMONDS, 1),
             Card(Suit.CLUBS, 1),
             Card(Suit.DIAMONDS, 4),
@@ -51,7 +51,7 @@ class TestHands(unittest.TestCase):
 
     def test_two_pair(self):
         hand = Hand()
-        hand.cards.extend([
+        hand.add_cards([
             Card(Suit.DIAMONDS, 1),
             Card(Suit.CLUBS, 1),
             Card(Suit.DIAMONDS, 2),
@@ -62,7 +62,7 @@ class TestHands(unittest.TestCase):
 
     def test_full_house(self):
         hand = Hand()
-        hand.cards.extend([
+        hand.add_cards([
             Card(Suit.DIAMONDS, 1),
             Card(Suit.CLUBS, 1),
             Card(Suit.DIAMONDS, 2),
@@ -73,7 +73,7 @@ class TestHands(unittest.TestCase):
 
     def test_better_pair(self):
         hand = Hand()
-        hand.cards.extend([
+        hand.add_cards([
             Card(Suit.DIAMONDS, 1),
             Card(Suit.CLUBS, 1),
             Card(Suit.DIAMONDS, 5),
@@ -82,7 +82,7 @@ class TestHands(unittest.TestCase):
         ])
 
         other_hand = Hand()
-        other_hand.cards.extend([
+        other_hand.add_cards([
             Card(Suit.DIAMONDS, 2),
             Card(Suit.CLUBS, 2),
             Card(Suit.DIAMONDS, 6),
@@ -93,7 +93,7 @@ class TestHands(unittest.TestCase):
 
     def test_better_flush(self):
         hand = Hand()
-        hand.cards.extend([
+        hand.add_cards([
             Card(Suit.DIAMONDS, 10),
             Card(Suit.DIAMONDS, 13),
             Card(Suit.DIAMONDS, 5),
@@ -102,7 +102,7 @@ class TestHands(unittest.TestCase):
         ])
 
         other_hand = Hand()
-        other_hand.cards.extend([
+        other_hand.add_cards([
             Card(Suit.CLUBS, 2),
             Card(Suit.CLUBS, 8),
             Card(Suit.CLUBS, 6),
@@ -113,7 +113,7 @@ class TestHands(unittest.TestCase):
 
     def test_straight_with_royal(self):
         hand = Hand()
-        hand.cards.extend([
+        hand.add_cards([
             Card(Suit.DIAMONDS, 1),
             Card(Suit.CLUBS, 10),
             Card(Suit.DIAMONDS, 11),
@@ -123,10 +123,9 @@ class TestHands(unittest.TestCase):
 
         self.assertEqual(hand.calculate_hand_value(), HandValue.STRAIGHT)
 
-
     def test_full_house_comparison(self):
         hand = Hand()
-        hand.cards.extend([
+        hand.add_cards([
             Card(Suit.DIAMONDS, 1),
             Card(Suit.CLUBS, 1),
             Card(Suit.CLUBS, 1),
@@ -134,7 +133,7 @@ class TestHands(unittest.TestCase):
             Card(Suit.HEARTS, 3),
         ])
         other_hand = Hand()
-        other_hand.cards.extend([
+        other_hand.add_cards([
             Card(Suit.DIAMONDS, 13),
             Card(Suit.CLUBS, 13),
             Card(Suit.CLUBS, 12),
@@ -144,10 +143,10 @@ class TestHands(unittest.TestCase):
 
         self.assertTrue(hand > other_hand)
         self.assertFalse(other_hand > hand)
-        
+
     def test_pair_comparison(self):
         hand = Hand()
-        hand.cards.extend([
+        hand.add_cards([
             Card(Suit.DIAMONDS, 10),
             Card(Suit.CLUBS, 10),
             Card(Suit.CLUBS, 5),
@@ -155,7 +154,7 @@ class TestHands(unittest.TestCase):
             Card(Suit.HEARTS, 1),
         ])
         other_hand = Hand()
-        other_hand.cards.extend([
+        other_hand.add_cards([
             Card(Suit.DIAMONDS, 13),
             Card(Suit.CLUBS, 13),
             Card(Suit.CLUBS, 10),
@@ -165,6 +164,7 @@ class TestHands(unittest.TestCase):
 
         self.assertFalse(hand > other_hand)
         self.assertTrue(other_hand > hand)
+
 
 if __name__ == '__main__':
     unittest.main()

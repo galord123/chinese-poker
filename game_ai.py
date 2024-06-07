@@ -1,10 +1,11 @@
-from copy import deepcopy
 from abc import abstractmethod, ABC
+from collections import Counter
+from copy import deepcopy
+from typing import List
+
 from game_card import Card
 from game_hand import Hand
-from game_utils import get_available_hands
-from collections import Counter
-from typing import List
+from game_utils import get_playable_hands
 
 
 class PokerAi(ABC):
@@ -14,16 +15,17 @@ class PokerAi(ABC):
 
 
 class SimplePokerAi(PokerAi):
-    def play_move(self, card_to_play, hands, other_hands, deck):
-        playable_hands = get_available_hands(hands)
+    def play_move(self, card_to_play: Card, hands: List[Hand], other_hands: List[Hand], deck: List[Card]) -> int:
+        playable_hands = get_playable_hands(hands)
 
-        for hand in playable_hands:
-            new_hand = deepcopy(hand)
-            new_hand.cards.append(card_to_play)
-            if new_hand > hand:
-                hand.cards.append(card_to_play)
-                # print(f"Bot played {card_to_play} to {hand}")
-                return
+        for position, hand in enumerate(hands):
+            if hand in playable_hands:
+                new_hand = deepcopy(hand)
+                new_hand.cards.append(card_to_play)
+                if new_hand > hand:
+                    hand.cards.append(card_to_play)
+                    # print(f"Bot played {card_to_play} to {hand}")
+                    return position
 
         playable_hands[0].cards.append(card_to_play)
         # print(f"Bot played {card_to_play} to {playable_hands[0]}")
@@ -31,7 +33,7 @@ class SimplePokerAi(PokerAi):
 
 class RandomPokerAi(PokerAi):
     def play_move(self, card_to_play, hands, other_hands, deck):
-        playable_hands = get_available_hands(hands)
+        playable_hands = get_playable_hands(hands)
         playable_hands[0].cards.append(card_to_play)
         # print(f"Bot played {card_to_play} to {playable_hands[0]}")
 
@@ -60,7 +62,7 @@ class AdvancedPokerAi(PokerAi):
         return remaining_suit_cards / len(deck)
 
     def play_move(self, card_to_play: Card, hands: List[Hand], other_hands: List[Hand], deck: List[Card]):
-        available_hands = get_available_hands(hands)
+        available_hands = get_playable_hands(hands)
 
         best_hand = None
         best_score = -float('inf')

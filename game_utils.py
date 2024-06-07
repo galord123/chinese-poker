@@ -2,7 +2,7 @@ from typing import List
 from game_hand import Hand
 
 
-def get_available_hands(hands: List[Hand]) -> List[Hand]:
-    min_deck = min(hands, key=lambda hand: len(hand.cards))
-    min_number = len(min_deck.cards)
-    return [hand for hand in hands if len(hand.cards) == min_number]
+def get_playable_hands(hands: List[Hand]) -> List[Hand]:
+    hand_with_minimum_cards = min(hands, key=lambda hand: len(hand.cards))
+    min_number_of_cards = len(hand_with_minimum_cards.cards)
+    return [hand for hand in hands if len(hand.cards) == min_number_of_cards]

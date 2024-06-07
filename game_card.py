@@ -1,7 +1,8 @@
 from dataclasses import dataclass
+from enum import Enum
 
 
-class Suit:
+class Suit(int, Enum):
     CLUBS = 0
     DIAMONDS = 1
     HEARTS = 2
@@ -13,7 +14,7 @@ class Card:
     suit: Suit
     number: int
 
-    def __gt__(self, other):
+    def __gt__(self, other: "Card") -> bool:
         if self.number == other.number:
             return int(self.suit) > int(other.suit)
 
@@ -28,5 +29,3 @@ class Card:
         }
 
         return str(self.number) + suit_arts[self.suit]
-
-

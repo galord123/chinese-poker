@@ -1,17 +1,17 @@
+import random
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import DefaultDict, Dict, List, Optional, Tuple
-from tqdm import tqdm
-import matplotlib.pyplot as plt
-import random
+from typing import DefaultDict, List, Optional, Tuple
 
-from game_ai import AdvancedPokerAi, PokerAi, RandomPokerAi, SimplePokerAi
+import matplotlib.pyplot as plt
+from tqdm import tqdm
+
+from game_ai import PokerAi, RandomPokerAi, SimplePokerAi
 from game_card import Card, Suit
 from game_hand import Hand, HandValue
-from game_utils import get_available_hands
 
 
-def get_deck() -> List[Card]:
+def initialize_deck() -> List[Card]:
     suites = [Suit.CLUBS, Suit.DIAMONDS, Suit.HEARTS, Suit.SPADES]
 
     deck = []
@@ -29,9 +29,13 @@ class GameResult:
     win_by_hand_value: DefaultDict[HandValue, int]
 
 
-def run_game(player1_ai: Optional[PokerAi] = None, player2_ai: Optional[PokerAi] = None, verbose: bool = False) -> GameResult:
+def run_game(player1_ai: Optional[PokerAi] = None, player2_ai: Optional[PokerAi] = None,
+             verbose: bool = False) -> GameResult:
     win_by_hand_value = defaultdict(int)
-    deck = get_deck()
+    deck = initialize_deck()
+
+    player1_ai = player1_ai if player1_ai is not None else RandomPokerAi()
+    player2_ai = player2_ai if player2_ai is not None else RandomPokerAi()
 
     player1_hands = [
         Hand(),
@@ -48,8 +52,8 @@ def run_game(player1_ai: Optional[PokerAi] = None, player2_ai: Optional[PokerAi]
         Hand(),
     ]
     for i in range(50):
-        turn = i % 2 == 0
         card = deck.pop()
+        turn = i % 2 == 0
         if turn:
             player = player1_ai
             current_hands = player1_hands
@@ -63,11 +67,8 @@ def run_game(player1_ai: Optional[PokerAi] = None, player2_ai: Optional[PokerAi]
             print(f"#{i}: {'player 1' if turn else 'player 2'}")
             print("to play", card)
             print(current_hands)
-        if player:
-            player.play_move(card, current_hands, other_hands, deck)
-        else:
-            hands = get_available_hands(current_hands)
-            hands[0].cards.append(card)
+
+        player.play_move(card, current_hands, other_hands, deck)
 
     player1_score = 0
     player2_score = 0
@@ -81,12 +82,11 @@ def run_game(player1_ai: Optional[PokerAi] = None, player2_ai: Optional[PokerAi]
         if result:
             player1_score += 1
             win_by_hand_value[hand1.calculate_hand_value()] += 1
-
         else:
             player2_score += 1
             win_by_hand_value[hand2.calculate_hand_value()] += 1
 
-    return GameResult((player1_score,  player2_score), win_by_hand_value)
+    return GameResult((player1_score, player2_score), win_by_hand_value)
 
 
 def main():
@@ -95,9 +95,8 @@ def main():
     total_player2_score = 0
     player1_wins = 0
     player2_wins = 0
-    for _ in tqdm(range(6000)):
-        game_result = run_game(
-            AdvancedPokerAi(), SimplePokerAi())
+    for _ in tqdm(range(1000)):
+        game_result = run_game(RandomPokerAi(), SimplePokerAi(), )
         player1_score, player2_score = game_result.player_scores
         total_player1_score += player1_score
         total_player2_score += player2_score
@@ -106,7 +105,7 @@ def main():
             player1_wins += 1
         else:
             player2_wins += 1
-            
+
         for key, value in game_result.win_by_hand_value.items():
             win_by_hand_value[key] += value
 
