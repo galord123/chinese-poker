@@ -2,7 +2,7 @@ from copy import deepcopy
 from enum import IntEnum
 from typing import List
 
-from game_card import Card
+from game.card import Card
 
 
 class HandValue(IntEnum):

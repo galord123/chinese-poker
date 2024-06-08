@@ -1,5 +1,5 @@
 from typing import List
-from game_hand import Hand
+from game.hand import Hand
 
 
 def get_playable_hands(hands: List[Hand]) -> List[Hand]:

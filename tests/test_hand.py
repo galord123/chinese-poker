@@ -1,7 +1,7 @@
 import unittest
 
-from game_card import Card, Suit
-from game_hand import Hand, HandValue
+from game.card import Card, Suit
+from game.hand import Hand, HandValue
 
 
 class TestHands(unittest.TestCase):
