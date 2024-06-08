@@ -37,21 +37,9 @@ def run_game(player1_ai: Optional[PokerAi] = None, player2_ai: Optional[PokerAi]
     player1_ai = player1_ai if player1_ai is not None else RandomPokerAi()
     player2_ai = player2_ai if player2_ai is not None else RandomPokerAi()
 
-    player1_hands = [
-        Hand(),
-        Hand(),
-        Hand(),
-        Hand(),
-        Hand(),
-    ]
-    player2_hands = [
-        Hand(),
-        Hand(),
-        Hand(),
-        Hand(),
-        Hand(),
-    ]
-    for i in range(50):
+    player1_hands, player2_hands = initialize_hands(deck)
+
+    for i in range(40):
         card = deck.pop()
         turn = i % 2 == 0
         if turn:
@@ -68,7 +56,16 @@ def run_game(player1_ai: Optional[PokerAi] = None, player2_ai: Optional[PokerAi]
             print("to play", card)
             print(current_hands)
 
-        player.play_move(card, current_hands, other_hands, deck)
+        played_hand = player.play_move(card, current_hands, other_hands, deck)
+        current_hands[played_hand].add_card(card)
+
+    first_player_card = deck.pop()
+    player1_replaced_index = player1_ai.play_last_move(first_player_card, other_hands, current_hands, deck)
+    other_hands[player1_replaced_index].replace_cards(first_player_card)
+
+    second_player_card = deck.pop()
+    player2_replaced_index = player2_ai.play_last_move(second_player_card, current_hands, other_hands, deck)
+    current_hands[player2_replaced_index].replace_cards(second_player_card)
 
     player1_score = 0
     player2_score = 0
@@ -87,6 +84,18 @@ def run_game(player1_ai: Optional[PokerAi] = None, player2_ai: Optional[PokerAi]
             win_by_hand_value[hand2.calculate_hand_value()] += 1
 
     return GameResult((player1_score, player2_score), win_by_hand_value)
+
+
+def initialize_hands(deck: List[Card]):
+    player1_hands = [Hand() for _ in range(5)]
+    player2_hands = [Hand() for _ in range(5)]
+    for i in range(5):
+        first_card = deck.pop()
+        second_card = deck.pop()
+        player1_hands[i].add_card(first_card)
+        player2_hands[i].add_card(second_card)
+
+    return player1_hands, player2_hands
 
 
 def main():

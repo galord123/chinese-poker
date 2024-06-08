@@ -3,6 +3,8 @@ from collections import Counter
 from copy import deepcopy
 from typing import List
 
+import numpy as np
+
 from game_card import Card
 from game_hand import Hand
 from game_utils import get_playable_hands
@@ -10,7 +12,11 @@ from game_utils import get_playable_hands
 
 class PokerAi(ABC):
     @abstractmethod
-    def play_move(self, card_to_play, hands, other_hands, deck):
+    def play_move(self, card_to_play: Card, hands: List[Hand], other_hands: List[Hand], deck: List[Card]) -> int:
+        pass
+
+    @abstractmethod
+    def play_last_move(self, card_to_play: Card, hands: List[Hand], other_hands: List[Hand], deck: List[Card]) -> int:
         pass
 
 
@@ -23,29 +29,34 @@ class SimplePokerAi(PokerAi):
                 new_hand = deepcopy(hand)
                 new_hand.cards.append(card_to_play)
                 if new_hand > hand:
-                    hand.cards.append(card_to_play)
                     # print(f"Bot played {card_to_play} to {hand}")
                     return position
 
-        playable_hands[0].cards.append(card_to_play)
+        return hands.index(playable_hands[0])
         # print(f"Bot played {card_to_play} to {playable_hands[0]}")
+
+    def play_last_move(self, card_to_play: Card, hands: List[Hand], other_hands: List[Hand], deck: List[Card]) -> int:
+        return np.random.randint(0, len(hands))
 
 
 class RandomPokerAi(PokerAi):
-    def play_move(self, card_to_play, hands, other_hands, deck):
+    def play_move(self, card_to_play: Card, hands: List[Hand], other_hands: List[Hand], deck: List[Card]) -> int:
         playable_hands = get_playable_hands(hands)
-        playable_hands[0].cards.append(card_to_play)
+        return hands.index(playable_hands[0])
         # print(f"Bot played {card_to_play} to {playable_hands[0]}")
+
+    def play_last_move(self, card_to_play: Card, hands: List[Hand], other_hands: List[Hand], deck: List[Card]) -> int:
+        return np.random.randint(0, len(hands))
 
 
 class AdvancedPokerAi(PokerAi):
-    def calculate_hand_improvement(self, hand: Hand, card: Card) -> float:
+    def calculate_hand_improvement(self, hand: Hand, card: Card) -> int:
         """ Calculate the improvement in hand strength if a card is added. """
         current_strength = hand.calculate_hand_value()
         potential_strength = hand.potential_strength(card)
         return potential_strength - current_strength
 
-    def calculate_opponent_threat(self, other_hands: List[Card], hand_index: int) -> float:
+    def calculate_opponent_threat(self, other_hands: List[Hand], hand_index: int) -> int:
         """ Evaluate the threat level of the opponent's hand at a given index. """
         return other_hands[hand_index].calculate_hand_value()
 
@@ -61,13 +72,13 @@ class AdvancedPokerAi(PokerAi):
             return 0.0
         return remaining_suit_cards / len(deck)
 
-    def play_move(self, card_to_play: Card, hands: List[Hand], other_hands: List[Hand], deck: List[Card]):
-        available_hands = get_playable_hands(hands)
+    def play_move(self, card_to_play: Card, hands: List[Hand], other_hands: List[Hand], deck: List[Card]) -> int:
+        playable_hands = get_playable_hands(hands)
 
         best_hand = None
         best_score = -float('inf')
 
-        for hand in available_hands:
+        for hand in playable_hands:
             improvement = self.calculate_hand_improvement(hand, card_to_play)
             hand_index = hands.index(hand)
             opponent_threat = self.calculate_opponent_threat(
@@ -82,7 +93,11 @@ class AdvancedPokerAi(PokerAi):
 
         # Add the card to the chosen hand
         if best_hand:
-            best_hand.cards.append(card_to_play)
+            return hands.index(best_hand)
             # print(f"Bot played {card_to_play} to {best_hand}")
         else:
-            available_hands[0].cards.append(card_to_play)
+            playable_hand = playable_hands[0]
+            return hands.index(playable_hand)
+
+    def play_last_move(self, card_to_play: Card, hands: List[Hand], other_hands: List[Hand], deck: List[Card]) -> int:
+        return np.random.randint(0, len(hands))

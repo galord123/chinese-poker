@@ -43,6 +43,15 @@ class Hand:
         for card in cards:
             self.add_card(card)
 
+    def replace_cards(self, new_card: Card):
+        replaced_card = self.cards[-1]
+        self.cards[-1] = new_card
+
+        self.values.remove(replaced_card.number)
+        self.values.append(new_card.number)
+        self.values.sort(reverse=True)
+
+
     @staticmethod
     def kind_count(values, n):
         return any(values.count(x) == n for x in values)
