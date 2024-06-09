@@ -3,9 +3,7 @@ from typing import List
 
 import numpy as np
 
-from game.card import Card
-from game.hand import Hand
-from game.utils import get_playable_hands
+from game import Card, Hand, Deck, get_playable_hands
 from players.pocker_ai import PokerAi
 
 
@@ -20,19 +18,21 @@ class AdvancedPokerAi(PokerAi):
         """ Evaluate the threat level of the opponent's hand at a given index. """
         return other_hands[hand_index].calculate_hand_value()
 
-    def calculate_flush_probability(self, hand: Hand, card: Card, deck: List[Card]) -> float:
+    def calculate_flush_probability(self, hand: Hand, card: Card, deck: Deck) -> float:
         """ Calculate the probability of completing a flush if a card is added. """
-        suit_counts = Counter(card.suit for card in hand.cards + [card])
-        max_suit_count = max(suit_counts.values())
-        needed_cards = 5 - max_suit_count
-        remaining_suit_cards = sum(
-            1 for c in deck if c.suit in suit_counts and suit_counts[c.suit] == max_suit_count)
+        suit_counts = Counter(card.suit for card in (hand.cards + [card]))
+        if len(suit_counts) > 1:
+            return 0
+        flash_suit = card.suit
+        extra_cards_needed = 5 - len(hand.cards) - 1
 
-        if needed_cards > len(deck):
-            return 0.0
-        return remaining_suit_cards / len(deck)
+        suit_cards_left = deck.get_suit_left(flash_suit)
 
-    def play_move(self, card_to_play: Card, hands: List[Hand], other_hands: List[Hand], deck: List[Card]) -> int:
+        if extra_cards_needed > suit_cards_left:
+            return 0
+        return extra_cards_needed / deck.cards_left_amount
+
+    def play_move(self, card_to_play: Card, hands: List[Hand], other_hands: List[Hand], deck: Deck) -> int:
         playable_hands = get_playable_hands(hands)
 
         best_hand = None
@@ -51,13 +51,8 @@ class AdvancedPokerAi(PokerAi):
                 best_score = score
                 best_hand = hand
 
-        # Add the card to the chosen hand
-        if best_hand:
-            return hands.index(best_hand)
-            # print(f"Bot played {card_to_play} to {best_hand}")
-        else:
-            playable_hand = playable_hands[0]
-            return hands.index(playable_hand)
+        best_hand = best_hand if best_hand else playable_hands[0]
+        return hands.index(best_hand)
 
-    def play_last_move(self, card_to_play: Card, hands: List[Hand], other_hands: List[Hand], deck: List[Card]) -> int:
+    def play_last_move(self, card_to_play: Card, hands: List[Hand], other_hands: List[Hand], deck: Deck) -> int | None:
         return np.random.randint(0, len(hands))

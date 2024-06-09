@@ -43,14 +43,13 @@ class Hand:
         for card in cards:
             self.add_card(card)
 
-    def replace_cards(self, new_card: Card):
+    def replace_last_card(self, new_card: Card):
         replaced_card = self.cards[-1]
         self.cards[-1] = new_card
 
         self.values.remove(replaced_card.number)
         self.values.append(new_card.number)
         self.values.sort(reverse=True)
-
 
     @staticmethod
     def kind_count(values, n):
@@ -141,7 +140,7 @@ class Hand:
             return highest_card > other_highest_card
 
 
-def calculate_two_pairs(hand: Hand) -> [int, int]:
+def calculate_two_pairs(hand: Hand) -> List[int]:
     pairs = sorted(list(set((x for x in hand.values if hand.values.count(x) == 2))), reverse=True)
     return pairs
 

@@ -3,7 +3,7 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-from game import run_game
+from run_game import run_game
 from players import RandomPokerAi, SimplePokerAi
 
 
@@ -44,5 +44,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-    run_game(player1_ai=RandomPokerAi(),
-             player2_ai=SimplePokerAi(), verbose=True)
+    run_game(player1_ai=RandomPokerAi(), player2_ai=SimplePokerAi())
