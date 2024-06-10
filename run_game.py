@@ -4,6 +4,7 @@ from typing import DefaultDict, Optional, Tuple, List
 
 from game import Hand, HandValue, Deck
 from players import PokerAi, RandomPokerAi
+from logger import logger
 
 
 @dataclass
@@ -24,17 +25,17 @@ def initialize_hands(deck: Deck) -> Tuple[List[Hand], List[Hand]]:
     return player1_hands, player2_hands
 
 
-def return_game_score(player1_hands: List[Hand], player2_hands: List[Hand], verbose: bool) -> GameResult:
+def return_game_score(player1_hands: List[Hand], player2_hands: List[Hand]) -> GameResult:
     win_by_hand_value = defaultdict(int)
     player1_score = 0
     player2_score = 0
     for hand1, hand2 in zip(player1_hands, player2_hands):
-        if verbose:
-            print(hand1, hand1.calculate_hand_value())
-            print(hand2, hand2.calculate_hand_value())
+        logger.debug(f'{hand1}, {hand1.calculate_hand_value()}')
+        logger.debug(f'{hand2}, {hand2.calculate_hand_value()}')
+
         result = hand1 > hand2
-        if verbose:
-            print(result)
+        logger.debug(f" game result: {result}")
+
         if result:
             player1_score += 1
             win_by_hand_value[hand1.calculate_hand_value()] += 1
@@ -44,8 +45,7 @@ def return_game_score(player1_hands: List[Hand], player2_hands: List[Hand], verb
     return GameResult((player1_score, player2_score), win_by_hand_value)
 
 
-def run_game(player1_ai: Optional[PokerAi] = None, player2_ai: Optional[PokerAi] = None,
-             verbose: bool = False) -> GameResult:
+def run_game(player1_ai: Optional[PokerAi] = None, player2_ai: Optional[PokerAi] = None) -> GameResult:
     deck = Deck()
     player1_ai = player1_ai if player1_ai is not None else RandomPokerAi()
     player2_ai = player2_ai if player2_ai is not None else RandomPokerAi()
@@ -58,10 +58,9 @@ def run_game(player1_ai: Optional[PokerAi] = None, player2_ai: Optional[PokerAi]
         current_hands = player1_hands if turn else player2_hands
         other_hands = player2_hands if turn else player1_hands
 
-        if verbose:
-            print(f"#{i}: {'player 1' if turn else 'player 2'}")
-            print("to play", card)
-            print(current_hands)
+        logger.debug(f"#{i}: {'player 1' if turn else 'player 2'}")
+        logger.debug(f'to play {card}')
+        logger.debug(current_hands)
 
         played_hand = player.play_move(card, current_hands, other_hands, deck)
         current_hands[played_hand].add_card(card)
@@ -76,4 +75,4 @@ def run_game(player1_ai: Optional[PokerAi] = None, player2_ai: Optional[PokerAi]
     if player2_replaced_index is not None:
         current_hands[player2_replaced_index].replace_last_card(second_player_card)
 
-    return return_game_score(player1_hands, player2_hands, verbose)
+    return return_game_score(player1_hands, player2_hands)

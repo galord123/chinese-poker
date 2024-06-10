@@ -2,3 +2,4 @@ matplotlib
 tqdm
 plotly
 numpy
+python-dotenv
