@@ -15,8 +15,11 @@ class Deck:
         self.suits_left: Dict[Suit, int] = {suit: 13 for suit in SUITS}
         self.number_left: Dict[int, int] = {number: 4 for number in range(1, 14)}
 
-    def pop(self) -> Card:
-        returned_card = self.cards_left.pop()
+    def pop(self) -> Card | None:
+        if self.cards_left_amount:
+            returned_card = self.cards_left.pop()
+        else:
+            return None
 
         self.cards_left_amount -= 1
         self.suits_left[returned_card.suit] -= 1
@@ -31,4 +34,6 @@ class Deck:
         return self.suits_left[suit]
 
     def get_number_left(self, number: int) -> int:
+        if number == 14:
+            return self.number_left[1]
         return self.number_left[number]
