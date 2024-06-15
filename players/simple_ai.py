@@ -13,9 +13,8 @@ class SimplePokerAi(PokerAi):
 
         for position, hand in enumerate(hands):
             if hand in playable_hands:
-                new_hand = deepcopy(hand)
-                new_hand._cards.append(card_to_play)
-                if has_better_cards(new_hand.get_cards(hand.player), hand.get_cards(hand.player)):
+                if has_better_cards(hand.get_cards(self.is_first_player) + [card_to_play],
+                                    hand.get_cards(self.is_first_player)):
                     return position
 
         return hands.index(playable_hands[0])

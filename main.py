@@ -14,7 +14,7 @@ def main():
     player1_wins = 0
     player2_wins = 0
     for _ in tqdm(range(1000)):
-        game_result = run_game(RandomPokerAi(), SimplePokerAi(), )
+        game_result = run_game(RandomPokerAi(True), SimplePokerAi(False))
         player1_score, player2_score = game_result.player_scores
         total_player1_score += player1_score
         total_player2_score += player2_score
@@ -44,4 +44,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-    run_game(player1_ai=RandomPokerAi(), player2_ai=SimplePokerAi())
+    run_game(player1_ai=RandomPokerAi(True), player2_ai=SimplePokerAi(False))
