@@ -17,7 +17,10 @@ class Card:
     def __gt__(self, other: "Card") -> bool:
         if self.number == other.number:
             return int(self.suit) > int(other.suit)
-
+        if self.number == 1:
+            return True
+        if other.number == 1:
+            return False
         return self.number > other.number
 
     def __str__(self) -> str:

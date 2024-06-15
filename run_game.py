@@ -2,19 +2,19 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import DefaultDict, Optional, Tuple, List
 
-from game import Hand, HandValue, Deck
+from game import Hand, HandBaseValue, Deck, calculate_hand_base_value, has_better_cards
 from players import PokerAi, RandomPokerAi
 
 
 @dataclass
 class GameResult:
     player_scores: Tuple[int, int]
-    win_by_hand_value: DefaultDict[HandValue, int]
+    win_by_hand_value: DefaultDict[HandBaseValue, int]
 
 
 def initialize_hands(deck: Deck) -> Tuple[List[Hand], List[Hand]]:
-    player1_hands = [Hand() for _ in range(5)]
-    player2_hands = [Hand() for _ in range(5)]
+    player1_hands = [Hand(True) for _ in range(5)]
+    player2_hands = [Hand(False) for _ in range(5)]
     for i in range(5):
         first_card = deck.pop()
         second_card = deck.pop()
@@ -30,17 +30,17 @@ def return_game_score(player1_hands: List[Hand], player2_hands: List[Hand], verb
     player2_score = 0
     for hand1, hand2 in zip(player1_hands, player2_hands):
         if verbose:
-            print(hand1, hand1.calculate_hand_value())
-            print(hand2, hand2.calculate_hand_value())
-        result = hand1 > hand2
+            print(hand1, calculate_hand_base_value(hand1.get_cards(True)))
+            print(hand2, calculate_hand_base_value(hand2.get_cards(False)))
+        result = has_better_cards(hand1.get_cards(True), hand2.get_cards(False))
         if verbose:
             print(result)
         if result:
             player1_score += 1
-            win_by_hand_value[hand1.calculate_hand_value()] += 1
+            win_by_hand_value[calculate_hand_base_value(hand1.get_cards(True))] += 1
         else:
             player2_score += 1
-            win_by_hand_value[hand2.calculate_hand_value()] += 1
+            win_by_hand_value[calculate_hand_base_value(hand1.get_cards(False))] += 1
     return GameResult((player1_score, player2_score), win_by_hand_value)
 
 

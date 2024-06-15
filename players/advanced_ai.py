@@ -20,11 +20,11 @@ class AdvancedPokerAi(PokerAi):
 
     def calculate_flush_probability(self, hand: Hand, card: Card, deck: Deck) -> float:
         """ Calculate the probability of completing a flush if a card is added. """
-        suit_counts = Counter(card.suit for card in (hand.cards + [card]))
+        suit_counts = Counter(card.suit for card in (hand._cards + [card]))
         if len(suit_counts) > 1:
             return 0
         flash_suit = card.suit
-        extra_cards_needed = 5 - len(hand.cards) - 1
+        extra_cards_needed = 5 - len(hand._cards) - 1
 
         suit_cards_left = deck.get_suit_left(flash_suit)
 
