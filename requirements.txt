@@ -2,3 +2,5 @@ matplotlib
 tqdm
 plotly
 numpy
+gym
+stable_baselines3
