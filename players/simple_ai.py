@@ -3,7 +3,7 @@ from typing import List
 
 import numpy as np
 
-from game import Card, Hand, Deck, get_playable_hands
+from game import Card, Hand, Deck, get_playable_hands, has_better_cards
 from players.pocker_ai import PokerAi
 
 
@@ -13,9 +13,8 @@ class SimplePokerAi(PokerAi):
 
         for position, hand in enumerate(hands):
             if hand in playable_hands:
-                new_hand = deepcopy(hand)
-                new_hand.cards.append(card_to_play)
-                if new_hand > hand:
+                if has_better_cards(hand.get_cards(self.is_first_player) + [card_to_play],
+                                    hand.get_cards(self.is_first_player)):
                     return position
 
         return hands.index(playable_hands[0])

@@ -3,30 +3,30 @@ from typing import List
 
 import numpy as np
 
-from game import Card, Hand, Deck, get_playable_hands
+from game import Card, Hand, Deck, get_playable_hands, calculate_hand_base_value
 from players.pocker_ai import PokerAi
 
 
 class AdvancedPokerAi(PokerAi):
     def calculate_hand_improvement(self, hand: Hand, card: Card) -> int:
         """ Calculate the improvement in hand strength if a card is added. """
-        current_strength = hand.calculate_hand_value()
-        potential_strength = hand.potential_strength(card)
+        current_strength = calculate_hand_base_value(hand.get_cards(self.is_first_player))
+        potential_strength = calculate_hand_base_value(hand.get_cards(self.is_first_player) + [card])
         return potential_strength - current_strength
 
     def calculate_opponent_threat(self, other_hands: List[Hand], hand_index: int) -> int:
         """ Evaluate the threat level of the opponent's hand at a given index. """
-        return other_hands[hand_index].calculate_hand_value()
+        return calculate_hand_base_value(other_hands[hand_index].get_cards(self.is_first_player))
 
     def calculate_flush_probability(self, hand: Hand, card: Card, deck: Deck) -> float:
         """ Calculate the probability of completing a flush if a card is added. """
-        suit_counts = Counter(card.suit for card in (hand.cards + [card]))
+        suit_counts = Counter(card.suit for card in (hand.get_cards(self.is_first_player) + [card]))
         if len(suit_counts) > 1:
             return 0
         flash_suit = card.suit
-        extra_cards_needed = 5 - len(hand.cards) - 1
+        extra_cards_needed = 5 - len(hand.get_cards(self.is_first_player)) - 1
 
-        suit_cards_left = deck.get_suit_left(flash_suit)
+        suit_cards_left = deck.get_suit_left(flash_suit, self.is_first_player)
 
         if extra_cards_needed > suit_cards_left:
             return 0
